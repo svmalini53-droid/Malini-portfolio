@@ -1,3 +1,1 @@
-To make the "Download Resume" button work, please delete this file and upload your resume PDF to this 'public' folder.
-
-IMPORTANT: Please name your resume file exactly 'Malini-S-Resume.pdf'
+Please upload your resume file named 'Malini-S-FlowCV-Resume_2420507.pdf' to this 'public' directory.
