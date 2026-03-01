@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['Manrope', 'sans-serif'],
+        headline: ['"Space Grotesk"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -92,11 +92,17 @@ export default {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' },
         },
+        'badge-pulse': {
+          '0%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0.4)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(56, 189, 248, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'float': 'float 6s ease-in-out infinite',
+        'badge-pulse': 'badge-pulse 2.8s ease-in-out infinite',
       },
     },
   },

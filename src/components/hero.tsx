@@ -69,7 +69,10 @@ export default function Hero() {
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <Button asChild size="lg" className="px-8 py-4 bg-primary text-card font-bold rounded-lg hover:bg-sky-300 transition-transform transform hover:-translate-y-1">
-              <a href="/Malini-S-FlowCV-Resume_2420507.pdf" download="Malini_Resume.pdf">
+              <a
+                href="/Malini-S-FlowCV-Resume%2024205057.pdf"
+                download="Malini_Resume.pdf"
+              >
                 <Download />
                 Download Resume
               </a>
