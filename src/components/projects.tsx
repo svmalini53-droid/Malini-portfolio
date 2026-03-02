@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 
 type PreviewType =
   | "nextriad"
@@ -247,6 +248,205 @@ const PreviewContent = ({ type }: PreviewContentProps) => {
 };
 
 /* ─────────────────────────────────────────
+   MODAL IMAGE CAROUSEL
+───────────────────────────────────────── */
+type ModalCarouselProps = {
+  project: Project;
+};
+
+const ModalCarousel = ({ project }: ModalCarouselProps) => {
+  // Generate 3 "slides" — each is just a different view/variant of the preview
+  // Slide 1: full preview content, Slide 2: centered label card, Slide 3: dark gradient overlay
+  const totalSlides = 3;
+  const [imgIndex, setImgIndex] = useState(0);
+  const [imgSlideClass, setImgSlideClass] = useState("img-slide-visible");
+  const [imgAnimating, setImgAnimating] = useState(false);
+
+  const goImgTo = useCallback(
+    (next: number, dir: "left" | "right") => {
+      if (imgAnimating) return;
+      const clamped = (next + totalSlides) % totalSlides;
+      if (clamped === imgIndex) return;
+      setImgAnimating(true);
+      setImgSlideClass(dir === "right" ? "img-slide-exit-left" : "img-slide-exit-right");
+      setTimeout(() => {
+        setImgIndex(clamped);
+        setImgSlideClass(dir === "right" ? "img-slide-enter-right-start" : "img-slide-enter-left-start");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setImgSlideClass("img-slide-visible");
+            setTimeout(() => setImgAnimating(false), 350);
+          });
+        });
+      }, 280);
+    },
+    [imgAnimating, imgIndex]
+  );
+
+  const prevImg = () => goImgTo(imgIndex - 1, "left");
+  const nextImg = () => goImgTo(imgIndex + 1, "right");
+
+  // Three different visual "views" of the project preview
+  const slideViews = [
+    // View 1 — normal preview content
+    <div key="v1" style={{ width: "100%", height: "100%", position: "relative" }}>
+      <PreviewContent type={project.previewContent} />
+    </div>,
+    // View 2 — centered title card overlay
+    <div
+      key="v2"
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: `radial-gradient(ellipse at 40% 40%, rgba(0,212,255,0.10) 0%, transparent 70%), ${project.previewBg}`,
+        position: "relative",
+      }}
+    >
+      <div style={{
+        background: "rgba(255,255,255,0.05)",
+        backdropFilter: "blur(10px)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: 14,
+        padding: "20px 28px",
+        textAlign: "center",
+        maxWidth: "80%",
+      }}>
+        <div style={{ fontSize: 32, marginBottom: 10 }}>
+          {project.previewContent === "nextriad" ? "⚡" :
+           project.previewContent === "crackers" ? "🪔" :
+           project.previewContent === "quiz" ? "📝" :
+           project.previewContent === "taskmaster" ? "✅" :
+           project.previewContent === "trip" ? "✈️" : "💰"}
+        </div>
+        <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{project.title}</div>
+        <div style={{ color: "#94a3b8", fontSize: 12 }}>{project.type} · {project.year}</div>
+        <div style={{ marginTop: 12, display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
+          {project.tags.filter(t => !t.startsWith("+")).map(tag => (
+            <span key={tag} style={{
+              background: "rgba(0,212,255,0.1)",
+              border: "1px solid rgba(0,212,255,0.25)",
+              color: "#00d4ff",
+              fontSize: 10,
+              padding: "3px 8px",
+              borderRadius: 4,
+            }}>{tag}</span>
+          ))}
+        </div>
+      </div>
+    </div>,
+    // View 3 — dark atmospheric with stats/info
+    <div
+      key="v3"
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: `linear-gradient(135deg, ${project.previewBg} 0%, #0a0f20 100%)`,
+        padding: 20,
+        gap: 12,
+      }}
+    >
+      <div style={{
+        color: "#fff",
+        fontSize: 13,
+        fontWeight: 700,
+        letterSpacing: "0.05em",
+        textTransform: "uppercase",
+        opacity: 0.5,
+      }}>
+        Project Overview
+      </div>
+      <div style={{
+        width: "100%",
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 10,
+        padding: "12px 16px",
+      }}>
+        <div style={{ color: "#94a3b8", fontSize: 11, lineHeight: 1.6 }}>
+          {project.description.slice(0, 120)}…
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8, width: "100%" }}>
+        {["Live", "GitHub", project.year].map(label => (
+          <div key={label} style={{
+            flex: 1,
+            background: "rgba(0,212,255,0.08)",
+            border: "1px solid rgba(0,212,255,0.18)",
+            borderRadius: 8,
+            padding: "6px 0",
+            textAlign: "center",
+            color: "#00d4ff",
+            fontSize: 10,
+            fontWeight: 600,
+          }}>{label}</div>
+        ))}
+      </div>
+    </div>,
+  ];
+
+  return (
+    <div className="modal-carousel-wrap">
+      {/* Slide */}
+      <div
+        className={`modal-carousel-slide ${imgSlideClass}`}
+        style={{ background: project.previewBg }}
+      >
+        {slideViews[imgIndex]}
+      </div>
+
+      {/* Counter badge */}
+      <div className="modal-carousel-counter">
+        {imgIndex + 1} / {totalSlides}
+      </div>
+
+      {/* Prev / Next arrows */}
+      <button
+        className="modal-carousel-arrow modal-carousel-arrow-left"
+        onClick={prevImg}
+        aria-label="Previous image"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <button
+        className="modal-carousel-arrow modal-carousel-arrow-right"
+        onClick={nextImg}
+        aria-label="Next image"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+
+      {/* Bottom label */}
+      <div className="modal-preview-label">
+        <strong>{project.title}</strong>
+        <span>{project.type}</span>
+        {/* Dots */}
+        <div className="modal-carousel-dots">
+          {Array.from({ length: totalSlides }).map((_, i) => (
+            <button
+              key={i}
+              className={`modal-carousel-dot${i === imgIndex ? " modal-dot-active" : ""}`}
+              onClick={() => goImgTo(i, i > imgIndex ? "right" : "left")}
+              aria-label={`Image ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────
    MODAL
 ───────────────────────────────────────── */
 type ModalProps = { project: Project | null; onClose: () => void };
@@ -264,36 +464,37 @@ const Modal = ({ project, onClose }: ModalProps) => {
             <span className="modal-year">{project.year}</span>
           </div>
         </div>
-        <div className="modal-preview" style={{ background: project.previewBg }}>
-          <PreviewContent type={project.previewContent} />
-          <div className="modal-preview-label">
-            <strong>{project.title}</strong>
-            <span>{project.type}</span>
+        <div className="modal-body">
+          {/* Left: image carousel */}
+          <ModalCarousel project={project} />
+
+          {/* Right: info */}
+          <div className="modal-info">
+            <p className="modal-desc">{project.description}</p>
+            <div className="modal-tech">
+              <h4>Technologies Used</h4>
+              <div className="modal-tags">
+                {project.tags.filter((t) => !t.startsWith("+")).map((tag) => (
+                  <span key={tag} className="modal-tag">{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div className="modal-actions">
+              <a href={project.githubUrl} className="btn-github" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+                </svg>
+                View Code
+              </a>
+              <a href={project.liveUrl} className="btn-live" target="_blank" rel="noopener noreferrer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                Visit Live Site
+              </a>
+            </div>
           </div>
-        </div>
-        <p className="modal-desc">{project.description}</p>
-        <div className="modal-tech">
-          <h4>Technologies Used</h4>
-          <div className="modal-tags">
-            {project.tags.filter((t) => !t.startsWith("+")).map((tag) => (
-              <span key={tag} className="modal-tag">{tag}</span>
-            ))}
-          </div>
-        </div>
-        <div className="modal-actions">
-          <a href={project.githubUrl} className="btn-github" target="_blank" rel="noopener noreferrer">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-            </svg>
-            View Code
-          </a>
-          <a href={project.liveUrl} className="btn-live" target="_blank" rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-            Visit Live Site
-          </a>
         </div>
       </div>
 
@@ -334,18 +535,107 @@ const Modal = ({ project, onClose }: ModalProps) => {
         .badge-type { background: #00d4ff; color: #000; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
         .badge-fire { background: #e67e22; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
         .modal-year { color: #94a3b8; font-size: 13px; }
-        .modal-preview {
-          border-radius: 12px; overflow: hidden;
-          min-height: 220px; position: relative;
-          margin-bottom: 20px;
-          display: flex; flex-direction: column; justify-content: flex-end;
+        .modal-body { display: grid; gap: 20px; }
+        .modal-info { display: flex; flex-direction: column; }
+
+        /* ── MODAL CAROUSEL ── */
+        .modal-carousel-wrap {
+          position: relative;
+          border-radius: 12px;
+          overflow: hidden;
+          min-height: 260px;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
         }
+        .modal-carousel-slide {
+          flex: 1;
+          min-height: 220px;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.32s ease;
+        }
+        /* Slide states */
+        .img-slide-visible      { transform: translateX(0);     opacity: 1; }
+        .img-slide-exit-left    { transform: translateX(-60px); opacity: 0; pointer-events: none; }
+        .img-slide-exit-right   { transform: translateX(60px);  opacity: 0; pointer-events: none; }
+        .img-slide-enter-right-start { transform: translateX(60px);  opacity: 0; transition: none !important; }
+        .img-slide-enter-left-start  { transform: translateX(-60px); opacity: 0; transition: none !important; }
+
+        /* Counter badge */
+        .modal-carousel-counter {
+          position: absolute;
+          top: 12px; right: 12px;
+          background: rgba(0,0,0,0.65);
+          backdrop-filter: blur(4px);
+          color: #fff;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 20px;
+          z-index: 10;
+          letter-spacing: 0.05em;
+        }
+
+        /* Arrows */
+        .modal-carousel-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 36px; height: 36px;
+          border-radius: 50%;
+          background: rgba(0,0,0,0.55);
+          backdrop-filter: blur(4px);
+          border: 1px solid rgba(255,255,255,0.15);
+          color: #fff;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer;
+          z-index: 10;
+          transition: background .2s, border-color .2s, transform .15s;
+        }
+        .modal-carousel-arrow:hover {
+          background: rgba(0,212,255,0.25);
+          border-color: rgba(0,212,255,0.6);
+        }
+        .modal-carousel-arrow-left  { left: 10px; }
+        .modal-carousel-arrow-right { right: 10px; }
+
+        /* Bottom label */
         .modal-preview-label {
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
           background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-          padding: 10px 14px; display: flex; flex-direction: column; gap: 2px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          z-index: 9;
         }
         .modal-preview-label strong { color: #fff; font-size: 14px; }
-        .modal-preview-label span { color: #94a3b8; font-size: 12px; }
+        .modal-preview-label span { color: #94a3b8; font-size: 12px; flex: 1; }
+
+        /* Dots inside label */
+        .modal-carousel-dots {
+          display: flex;
+          gap: 5px;
+          align-items: center;
+        }
+        .modal-carousel-dot {
+          height: 7px; width: 7px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.3);
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          transition: width .3s ease, background .3s ease, border-radius .3s ease;
+        }
+        .modal-dot-active {
+          width: 20px;
+          border-radius: 4px;
+          background: #00d4ff;
+        }
+
         .modal-desc { color: #94a3b8; line-height: 1.7; font-size: 15px; margin-bottom: 20px; }
         .modal-tech h4 { color: #fff; font-weight: 600; margin-bottom: 10px; }
         .modal-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
@@ -369,6 +659,20 @@ const Modal = ({ project, onClose }: ModalProps) => {
           transition: all .2s; flex: 1; justify-content: center;
         }
         .btn-live:hover { background: #00bfe8; transform: translateY(-1px); }
+        @media (min-width: 900px) {
+          .modal-box { max-width: 960px; }
+          .modal-body { grid-template-columns: 1fr 1.1fr; align-items: start; }
+          .modal-carousel-wrap { min-height: 300px; }
+          .modal-carousel-slide { min-height: 260px; }
+        }
+        @media (max-width: 640px) {
+          .modal-box { padding: 20px; }
+          .modal-title { font-size: 1.25rem; }
+          .modal-desc { font-size: 14px; }
+          .modal-actions { flex-direction: column; }
+          .btn-github, .btn-live { width: 100%; justify-content: center; }
+          .card-desc { height: auto; -webkit-line-clamp: 4; }
+        }
       `}</style>
     </div>
   );
@@ -377,10 +681,30 @@ const Modal = ({ project, onClose }: ModalProps) => {
 /* ─────────────────────────────────────────
    PROJECT CARD
 ───────────────────────────────────────── */
-type ProjectCardProps = { project: Project; onClick: () => void };
-function ProjectCard({ project, onClick }: ProjectCardProps) {
+type ProjectCardProps = { project: Project; onClick: () => void; slideFrom: "left" | "right" };
+function ProjectCard({ project, onClick, slideFrom }: ProjectCardProps) {
+  const cardVariants = {
+    hidden: (dir: "left" | "right") => ({
+      opacity: 0,
+      x: dir === "left" ? -26 : 26,
+    }),
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
   return (
-    <div className="proj-card" onClick={onClick}>
+    <motion.div
+      className="proj-card"
+      onClick={onClick}
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      custom={slideFrom}
+    >
       <div className="card-preview" style={{ background: project.previewBg }}>
         <div className="card-badge-row">
           <span className="cb-type">{project.type}</span>
@@ -408,7 +732,7 @@ function ProjectCard({ project, onClick }: ProjectCardProps) {
           </svg>
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -532,10 +856,11 @@ export default function Projects() {
               className={`carousel-track ${slideClass}`}
               style={{ gridTemplateColumns: `repeat(${visibleCount}, 1fr)` }}
             >
-              {projects.slice(currentIndex, currentIndex + visibleCount).map((project) => (
+              {projects.slice(currentIndex, currentIndex + visibleCount).map((project, idx) => (
                 <ProjectCard
                   key={project.id}
                   project={project}
+                  slideFrom={(currentIndex + idx) % 2 === 0 ? "left" : "right"}
                   onClick={() => setActiveModal(project)}
                 />
               ))}

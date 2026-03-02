@@ -1,5 +1,8 @@
+'use client';
+
 import { Phone, Mail, Github, Linkedin } from 'lucide-react';
 import { ContactForm } from './contact-form';
+import { motion } from 'framer-motion';
 
 export default function Contact() {
   return (
@@ -24,9 +27,15 @@ export default function Contact() {
           </div>
         </div>
 
-        <div className="max-w-md mx-auto">
+        <motion.div
+          className="max-w-md mx-auto"
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, amount: 0.25 }}
+        >
           <ContactForm />
-        </div>
+        </motion.div>
 
         <div className="mt-16 flex justify-center space-x-6">
           <a href="https://github.com/Malini-kumar" target="_blank" rel="noopener noreferrer" aria-label="Github" className="text-slate-400 hover:text-primary hover:-translate-y-1 transition-all text-2xl">

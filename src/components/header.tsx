@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
@@ -13,11 +13,26 @@ const navLinks = [
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setIsSticky(window.scrollY > 10);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="fixed w-full z-50 backdrop-blur-md bg-background/80 border-b border-white/10">
+    <header
+      className={cn(
+        "fixed w-full z-50 border-b border-white/10 transition-all duration-300 nav-animate",
+        isSticky
+          ? "bg-background/75 backdrop-blur-xl shadow-lg shadow-black/20"
+          : "bg-background/50 backdrop-blur-md"
+      )}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -64,6 +79,18 @@ export default function Header() {
           </a>
         </div>
       </div>
+      <style>{`
+        .nav-animate {
+          animation: navIn .35s ease;
+        }
+        @keyframes navIn {
+          from { opacity: 0; transform: translateY(-12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .nav-animate { animation: none; }
+        }
+      `}</style>
     </header>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { PythonIcon, ReactIcon, NodeIcon } from '@/components/icons';
 import { Wand2, LoaderCircle, Download } from 'lucide-react';
@@ -42,7 +43,13 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col-reverse lg:flex-row items-center gap-8">
         
         {/* Text Content */}
-        <div className="lg:w-1/2 text-center lg:text-left">
+        <motion.div
+          className="lg:w-1/2 text-center lg:text-left"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, amount: 0.3 }}
+        >
           <p className="text-primary font-mono mb-4">Hi, my name is</p>
           <h1 className="text-5xl sm:text-7xl font-extrabold text-white mb-6 tracking-tight">
             Malini S
@@ -57,7 +64,7 @@ export default function Hero() {
               variant="ghost"
               onClick={handleEnhanceBio}
               disabled={isPending}
-              className="absolute -top-8 right-0 lg:right-16 text-primary hover:text-primary hover:bg-primary/10"
+              className="mt-4 sm:mt-0 sm:absolute sm:-top-8 sm:right-0 lg:right-16 text-primary hover:text-primary hover:bg-primary/10"
             >
               {isPending ? (
                 <LoaderCircle className="animate-spin mr-2" />
@@ -81,10 +88,16 @@ export default function Hero() {
               <a href="#contact">Contact Me</a>
             </Button>
           </div>
-        </div>
+        </motion.div>
         
         {/* Hero Image/Graphic */}
-        <div className="lg:w-1/2 flex justify-center">
+        <motion.div
+          className="lg:w-1/2 flex justify-center"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true, amount: 0.3 }}
+        >
           <div className="w-72 h-72 sm:w-96 sm:h-96 relative">
             <div className="absolute inset-0 border-2 border-primary rounded-full animate-[spin_10s_linear_infinite] opacity-20"></div>
             <div className="absolute inset-4 border-2 border-secondary rounded-full animate-[spin_15s_linear_infinite_reverse] opacity-20"></div>
@@ -104,7 +117,7 @@ export default function Hero() {
               <PythonIcon className="w-6 h-6" />
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
