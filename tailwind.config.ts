@@ -93,9 +93,9 @@ export default {
           '50%': { transform: 'translateY(-20px)' },
         },
         'badge-pulse': {
-          '0%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0.4)' },
-          '70%': { boxShadow: '0 0 0 14px rgba(56, 189, 248, 0)' },
-          '100%': { boxShadow: '0 0 0 0 rgba(56, 189, 248, 0)' },
+          '0%': { boxShadow: '0 0 0 0 rgba(236, 72, 153, 0.4)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(236, 72, 153, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(236, 72, 153, 0)' },
         },
       },
       animation: {

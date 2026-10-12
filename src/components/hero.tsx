@@ -8,7 +8,7 @@ import { Wand2, LoaderCircle, Download } from 'lucide-react';
 import { enhanceBioWithAI, EnhanceBioWithAIInput } from '@/ai/flows/enhance-bio-with-ai';
 import { useToast } from '@/hooks/use-toast';
 
-const initialBio = "I am a motivated MCA final-year student with strong technical and problem-solving skills. I specialize in building creative web projects using the MERN stack and am eager to build a successful career in a dynamic organization.";
+const initialBio = "MCA graduate working as a Full Stack Developer at ATmega, building live client websites and AI-powered applications. Skilled in React.js, Next.js, Node.js, Express.js, Python, FastAPI, JavaScript, TypeScript and SQL, with experience in REST API development, Firebase, and MongoDB databases.";
 
 export default function Hero() {
   const [bio, setBio] = useState(initialBio);
@@ -53,7 +53,7 @@ export default function Hero() {
           <p className="text-primary font-mono mb-4">Hi, my name is</p>
           <h1 className="text-5xl sm:text-7xl font-extrabold text-white mb-6 tracking-tight">
             Malini S
-            <span className="block text-slate-400 mt-2 text-4xl sm:text-6xl font-semibold">MERN Stack Developer</span>
+            <span className="block text-slate-400 mt-2 text-4xl sm:text-6xl font-semibold">Full Stack Developer</span>
           </h1>
           <div className="relative">
             <p className="text-slate-400 text-lg max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
@@ -77,8 +77,10 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <Button asChild size="lg" className="px-8 py-4 bg-primary text-card font-bold rounded-lg hover:bg-sky-300 transition-transform transform hover:-translate-y-1">
               <a
-                href="/Malini-S-FlowCV-Resume%2024205057.pdf"
+                href="/Malini-Resume.pdf"
                 download="Malini_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Download />
                 Download Resume
