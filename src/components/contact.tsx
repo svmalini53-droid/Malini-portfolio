@@ -38,10 +38,10 @@ export default function Contact() {
         </motion.div>
 
         <div className="mt-16 flex justify-center space-x-6">
-          <a href="https://github.com/Malini-kumar" target="_blank" rel="noopener noreferrer" aria-label="Github" className="text-slate-400 hover:text-primary hover:-translate-y-1 transition-all text-2xl">
+          <a href="https://github.com/malini-2004" target="_blank" rel="noopener noreferrer" aria-label="Github" className="text-slate-400 hover:text-primary hover:-translate-y-1 transition-all text-2xl">
             <Github />
           </a>
-          <a href="https://linkedin.com/in/Malini-kumar" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-slate-400 hover:text-primary hover:-translate-y-1 transition-all text-2xl">
+          <a href="https:www.linkedin.com/in/malini-kumar-43731925b?" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-slate-400 hover:text-primary hover:-translate-y-1 transition-all text-2xl">
             <Linkedin />
           </a>
         </div>
