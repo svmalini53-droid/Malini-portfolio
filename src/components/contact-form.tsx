@@ -32,11 +32,13 @@ export function ContactForm() {
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    // In a real application, you would send the data to your backend here.
-    console.log(data);
+    const phoneNumber = "917867944608";
+    const message = `Hi Malini,\n\nName: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
     toast({
       title: "Message Sent!",
-      description: "Thanks for reaching out. I'll get back to you soon.",
+      description: "WhatsApp has been opened with your message.",
     });
     setIsSubmitted(true);
   };
